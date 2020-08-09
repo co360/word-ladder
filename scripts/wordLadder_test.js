@@ -77,28 +77,10 @@ function createWordLadder(steps=10) {
   }
 }
 
-
-// function isConnected(start, target) {
-//   // Return true if start word can be connected to target word by a word ladder
-//   let queue = [start];
-//   let seen = [];
-
-//   while (queue.length > 0) {
-//     let word = queue.shift();
-//     if (word == target) return true;
-
-//     if (word in seen) continue;
-
-//     seen.push(word);  
-//     queue = queue.concat(getNextWords(word));
-//   }
-
-// }
-
 function isConnected(start, target) {
   // Return true if start word can be connected to target word by a word ladder
   let queue = [start];
-  let seen = [];
+  let seen = {};
 
   while (queue.length > 0) {
     let word = queue.shift();
@@ -106,11 +88,49 @@ function isConnected(start, target) {
 
     if (word in seen) continue;
 
-    seen.push(word);  
+    seen[word] = true;
     queue = queue.concat(nextWords[word]);
   }
 
+  return false;
+
 }
+
+
+function shortestPath(start, target) {
+  // Return true if start word can be connected to target word by a word ladder
+  let queue = [start];
+  let seen = {};
+
+  let paths = {};
+
+  while (queue.length > 0) {
+    let word = queue.shift();
+    if (word == target) {
+      let path = [];
+      let pathWord = word;
+      while (pathWord != start) {
+        path.unshift(pathWord);
+        pathWord = paths[pathWord];
+      }
+      path.unshift(start);
+      return path;
+    }
+    
+    if (word in seen) continue;
+
+    seen[word] = true;
+
+    nextWords[word].forEach(nextWord => {
+      if ( !(nextWord in paths) ) {
+        paths[nextWord] = word;
+      }
+      queue.push(nextWord);
+    });
+
+  }
+}
+
 
 // approach: either pick two words and see if they're connected, or create a word ladder from scratch. I think the second approach makes the most sense. there will be 26*<word length> options per iteration but I think it's fine, better than just testing two random words
 
